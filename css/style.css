@@ -1,0 +1,139 @@
+@font-face {
+    font-family: 'Roboto';
+    src: url(../fonts/roboto-regular.woff);
+  }
+  
+  @font-face {
+    font-family: 'Roboto';
+    src: url(../fonts/roboto-bold.woff);
+    font-weight: bold;
+  }
+
+html:hover {
+    cursor: default;
+}
+
+:root {
+    --board-size: 85vmin;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    cursor: default;
+    margin: 0;
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+body:hover {
+    cursor: default;
+}
+
+#outer {
+    display: table;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+  
+#middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+  
+#inner {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: calc(var(--board-size) / 4.1);
+    font-weight: bold;
+    margin-top: 0;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border: 10px solid black;
+    border-radius: 7px;
+    margin: auto;
+    gap: 2px;
+    padding: 4px;
+    width: calc(var(--board-size) + 8px);
+    height: calc(var(--board-size) + 8px);
+}
+
+.cell {
+    display: grid;
+    position: relative;
+    border: 1px solid black;
+    border-radius: 7px;
+    width: calc(var(--board-size) / 5 - 2px);
+    height: calc(var(--board-size) / 5 - 2px);
+
+    /* background-color: black; */
+
+}
+
+.cell:nth-child(even) {
+    background-color: black;
+}
+
+#designed {
+    text-align: center;
+    align-self: auto;
+    color: white;
+    font-size: 9px; 
+    margin-top: -11.7px;
+}
+
+
+@media (orientation: landscape) and (max-height: 460px) {
+
+    h1 {
+        display: none;
+    }
+}
+
+@media (min-width: 460px) and (min-height: 460px) {
+
+    :root {
+        --board-size-big: 400px;
+    }
+
+    h1 {
+        font-size: 98px;
+    }
+
+    .board {
+        border: 15px solid black;
+        gap: 5px;
+        padding: 5px;
+        width: calc(var(--board-size-big) + 5px);
+        height: calc(var(--board-size-big) + 5px);       
+    }
+
+    .cell {
+        width: 75px;
+        height: 75px;
+    }
+
+    #designed {
+        font-size: 13.6px; 
+        margin-top: -18px;
+    }
+}
+
+.noselect {
+    -webkit-tap-highlight-color: transparent;
+          -webkit-touch-callout: none;
+            -webkit-user-select: none; 
+               -moz-user-select: none; 
+                -ms-user-select: none; 
+                    user-select: none; 
+}
+    
