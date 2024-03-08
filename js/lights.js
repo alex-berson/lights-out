@@ -14,7 +14,7 @@ const generatePattern = () => {
     } 
 }
 
-const fillBoard = () => {   
+const refreshBoard = () => {   
 
     let cells = document.querySelectorAll('.cell');
 
@@ -34,6 +34,42 @@ const setBoardSize = () => {
     document.documentElement.style.setProperty('--board-size', boardSize + 'px');
 }
 
+const toggleLights = (e) => {
+
+    let cell = e.target;
+    let i = Math.floor([...cell.parentNode.children].indexOf(cell) / size);
+    let j = [...cell.parentNode.children].indexOf(cell) % size;
+
+    board[i][j] ^= 1;
+
+    if (i - 1 >= 0) board[i - 1][j] ^= 1;
+    if (i + 1 < size) board[i + 1][j] ^= 1;
+    if (j - 1 >= 0) board[i][j - 1] ^= 1;
+    if (j + 1 < size) board[i][j + 1] ^= 1;
+
+    refreshBoard();
+}
+
+const enableTouch = () => {
+
+    let cells = document.querySelectorAll('.cell');
+
+    cells.forEach(cell => {
+        cell.addEventListener('touchstart', toggleLights);
+        cell.addEventListener('mousedown', toggleLights);
+    });
+}
+
+const disableTouch = () => {
+
+    let cells = document.querySelectorAll('.cell');
+
+    cells.forEach(cell => {
+        cell.removeEventListener('touchstart', toggleLights);
+        cell.removeEventListener('mousedown', toggleLights);
+    });
+}
+
 const disableTapZoom = () => {
 
     const preventDefault = (e) => {e.preventDefault()};
@@ -48,8 +84,9 @@ const init = () => {
     setBoardSize(); 
     initBoard();
     generatePattern();
-    fillBoard();
+    refreshBoard();
     showBoard();
+    enableTouch();
 }
 
 window.addEventListener('load', () => document.fonts.ready.then(init));
