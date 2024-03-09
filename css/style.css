@@ -1,11 +1,11 @@
 @font-face {
-    font-family: 'Roboto';
-    src: url(../fonts/roboto-regular.woff);
+    font-family: 'Roboto Condensed';
+    src: url(../fonts/roboto-condensed-regular.woff);
 }
 
 @font-face {
-    font-family: 'Roboto';
-    src: url(../fonts/roboto-bold.woff);
+    font-family: 'Roboto Condensed';
+    src: url(../fonts/roboto-condensed-bold.woff);
     font-weight: bold;
 }
 
@@ -14,12 +14,14 @@ html:hover {
 }
 
 :root {
+    --size: 5;
     --board-size: 85vmin;
-    --color: #060501;
+    --black: #060501;
+    --yellow: #f8ba00;
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto Condensed', Helvetica, sans-serif;
     cursor: default;
     margin: 0;
     opacity: 0;
@@ -51,18 +53,21 @@ body:hover {
 
 h1 {
     text-align: center;
-    color: var(--color);
+    color: var(--black);
     font-size: calc(var(--board-size) / 4.20);
     font-weight: bold;
     margin-top: 0;
+
+    /* font-size: calc(var(--board-size) / 4.60); */
+    /* text-indent: -2px; */
 }
 
 .board {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(var(--size), 1fr);
     width: calc(var(--board-size));
     height: calc(var(--board-size));
-    border: 10px solid var(--color);
+    border: 10px solid var(--black);
     border-radius: 7px;
     padding: 2px;
     margin: auto;
@@ -71,18 +76,18 @@ h1 {
 .cell {
     display: grid;
     position: relative;
-    width: calc(var(--board-size) / 5 - 4px);
-    height: calc(var(--board-size) / 5 - 4px);
+    width: calc(var(--board-size) / var(--size) - 4px);
+    height: calc(var(--board-size) / var(--size) - 4px);
     /* border: 1px solid var(--color); */
     border-radius: 7px;
-    background-color: var(--color);
+    background-color: var(--black);
     cursor: pointer;
     margin: 2px;
     transition: background-color 0.05s linear;
 }
 
 .on {
-    background-color: #f8ba00;
+    background-color: var(--yellow);
 }
 
 #designed {
@@ -90,7 +95,7 @@ h1 {
     align-self: auto;
     color: white;
     font-size: 9px; 
-    margin-top: -11.7px;
+    margin-top: -12px;
 }
 
 
@@ -105,6 +110,9 @@ h1 {
 
     h1 {
         font-size: 96px;
+
+        /* font-size: 89px; */
+        text-indent: -5px;
     }
 
     .board {
@@ -121,8 +129,8 @@ h1 {
     }
 
     #designed {
-        font-size: 13.6px; 
-        margin-top: -18px;
+        font-size: 12.8px; 
+        margin-top: -16.9px;
     }
 }
 

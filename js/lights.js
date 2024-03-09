@@ -5,13 +5,89 @@ const showBoard = () => document.body.style.opacity = 1;
 
 const initBoard = () => board = Array.from({length: size}, () => []);
 
-const generatePattern = () => {
+const createToggleMatrix = () => {
+
+    const index = (i, j) => i * size + j;
+
+    let matrix = Array.from({length: size ** 2}, () => Array(size ** 2).fill(0));
 
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
-            board[i][j] = Math.round(Math.random());
+
+            matrix[index(i, j)][index(i, j)] = 1;
+
+            if (i - 1 >= 0) matrix[index(i, j)][index(i - 1, j)] = 1;
+            if (i + 1 < size) matrix[index(i, j)][index(i + 1, j)] = 1;
+            if (j - 1 >= 0) matrix[index(i, j)][index(i, j - 1)] = 1;
+            if (j + 1 < size) matrix[index(i, j)][index(i, j + 1)] = 1;
         }
-    } 
+    }
+
+    return matrix;
+}
+
+const gaussianEliminationMod2  = () => {
+
+    let n = size ** 2;
+    let matrix = createToggleMatrix();
+    let target = board.flat();
+
+    for (let i = 0; i < n; i++) {
+        matrix[i].push(target[i]);
+    }
+
+    for (let i = 0; i < n; i++) {
+
+        let pivot;
+
+        for (let row = i; row < n; row++) {
+            if (matrix[row][i] == 1) {
+                pivot = row;
+                break;
+            }
+        }
+
+        if (pivot == undefined) continue;
+        if (pivot != i) [matrix[i], matrix[pivot]] = [matrix[pivot], matrix[i]];
+
+        for (let j = i + 1; j < n; j++) {
+            if (matrix[j][i] == 1) {
+                for (let k = i; k <= n; k++) {
+                    matrix[j][k] ^= matrix[i][k];
+                }
+            }
+        }
+    }
+
+    for (let i = 0; i < n; i++) {
+        if (matrix[i].every((val, idx) => val == 0 || idx == n) && matrix[i][n] == 1) return null; 
+    }
+
+    let solution = Array(n).fill(0);
+
+    for (let i = n - 1; i >= 0; i--) {
+
+        let sum = matrix[i][n];
+
+        for (let j = i + 1; j < n; j++) {
+            sum ^= (matrix[i][j] & solution[j]);
+        }
+
+        solution[i] = sum;
+    }
+
+    return solution;
+}
+
+const generatePattern = () => {
+
+    do {
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                board[i][j] = Math.round(Math.random());
+            }
+        } 
+    } while (gaussianEliminationMod2() == null);
 }
 
 const refreshBoard = () => {   
