@@ -1,9 +1,11 @@
 let board;
-let size = 5;
+let size = 3;
 
 const showBoard = () => document.body.style.opacity = 1;
 
 const initBoard = () => board = Array.from({length: size}, () => []);
+
+const puzzleSolved = () => board.every(row => row.every(cell => cell == 0));
 
 const createToggleMatrix = () => {
 
@@ -79,6 +81,20 @@ const gaussianEliminationMod2  = () => {
     return solution;
 }
 
+const showHints = () => {
+
+    let hints = document.querySelectorAll('.hint');
+    let solution = gaussianEliminationMod2();
+    let light = document.querySelector('.light');
+    let on = light.classList.contains('on');
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            hints[i * size + j].classList.toggle('on', solution[i * size + j] * on);
+        }
+    }
+}
+
 const generatePattern = () => {
 
     do {
@@ -88,6 +104,10 @@ const generatePattern = () => {
             }
         } 
     } while (gaussianEliminationMod2() == null);
+
+    //  board = [[1,1,1],
+    //           [1,1,1],
+    //           [1,1,1]]; 
 }
 
 const refreshBoard = () => {   
@@ -101,18 +121,9 @@ const refreshBoard = () => {
     }   
 }
 
-const setBoardSize = () => {
-
-    let minSide = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
-    let cssBoardSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--board-size')) / 100;
-    let boardSize = Math.ceil(minSide * cssBoardSize / size) * size;
-
-    document.documentElement.style.setProperty('--board-size', boardSize + 'px');
-}
-
 const toggleLights = (e) => {
-
-    let cell = e.target;
+    
+    let cell = e.currentTarget;
     let i = Math.floor([...cell.parentNode.children].indexOf(cell) / size);
     let j = [...cell.parentNode.children].indexOf(cell) % size;
 
@@ -124,6 +135,34 @@ const toggleLights = (e) => {
     if (j + 1 < size) board[i][j + 1] ^= 1;
 
     refreshBoard();
+    showHints();
+}
+
+const toggleHints = () => {
+
+    let light = document.querySelector('.light');
+
+    if (puzzleSolved()) return;
+
+    light.classList.toggle('on');
+
+    showHints();
+}
+
+const enableHints = () => {
+
+    let light = document.querySelector('.light');
+
+    light.addEventListener('touchstart', toggleHints);
+    light.addEventListener('mousedown', toggleHints);
+}
+
+const disableHints = () => {
+
+    let light = document.querySelector('.light');
+
+    light.removeEventListener('touchstart', toggleHints);
+    light.removeEventListener('mousedown', toggleHints);
 }
 
 const enableTouch = () => {
@@ -148,11 +187,21 @@ const disableTouch = () => {
 
 const disableTapZoom = () => {
 
-    const preventDefault = (e) => {e.preventDefault()};
+    const preventDefault = (e) => e.preventDefault();
 
     document.body.addEventListener('touchstart', preventDefault, {passive: false});
     document.body.addEventListener('mousedown', preventDefault, {passive: false});
 }
+
+const setBoardSize = () => {
+
+    let minSide = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
+    let cssBoardSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--board-size')) / 100;
+    let boardSize = Math.ceil(minSide * cssBoardSize / size) * size;
+
+    document.documentElement.style.setProperty('--board-size', boardSize + 'px');
+}
+
 
 const init = () => {
 
@@ -163,6 +212,7 @@ const init = () => {
     refreshBoard();
     showBoard();
     enableTouch();
+    enableHints();
 }
 
 window.addEventListener('load', () => document.fonts.ready.then(init));
