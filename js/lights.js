@@ -1,11 +1,11 @@
 let board;
 let size = 3;
 
-const showBoard = () => document.body.style.opacity = 1;
-
 const initBoard = () => board = Array.from({length: size}, () => []);
 
-const puzzleSolved = () => board.every(row => row.every(cell => cell == 0));
+const showBoard = () => document.body.style.opacity = 1;
+
+const puzzleSolved = () => board.every(row => row.every(sq => sq == 0));
 
 const createToggleMatrix = () => {
 
@@ -31,8 +31,8 @@ const createToggleMatrix = () => {
 const gaussianEliminationMod2  = () => {
 
     let n = size ** 2;
-    let matrix = createToggleMatrix();
     let target = board.flat();
+    let matrix = createToggleMatrix();
 
     for (let i = 0; i < n; i++) {
         matrix[i].push(target[i]);
@@ -121,6 +121,71 @@ const refreshBoard = () => {
     }   
 }
 
+const newGame = (e) => {
+
+    let i = document.querySelector('.i');
+    let board = document.querySelector('.board');
+    let cells = document.querySelectorAll('.cell');
+   
+    board.removeEventListener('touchstart', newGame);
+    board.removeEventListener('mousedown', newGame);
+
+    i.classList.remove('off');
+
+    cells.forEach(cell => cell.classList.remove('scale'));
+
+    setTimeout(() => {
+        cells.forEach(cell => cell.classList.remove('sharp'));
+    }, 20);
+
+    generatePattern();
+    refreshBoard();
+    showHints();
+    enableTouch();
+}
+
+const showBlackSquare = () => {
+
+    let cells = document.querySelectorAll('.cell');
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+           
+            let x = 50, y = 50;
+
+            if (i % size == 0) y = 0;
+            if (i % size == size - 1) y = 100;
+            if (j % size == 0) x = 0;
+            if (j % size == size - 1) x = 100;
+
+            cells[i * size + j].style.transformOrigin = `${x}% ${y}%`;
+            cells[i * size + j].classList.add('scale');
+
+            cells[i * size + j].addEventListener('transitionend', () => { 
+
+                cells[i * size + j].classList.add('sharp');
+
+            }, {once: true});
+        }
+    }
+}
+
+const gameOver = () => {
+
+    let i = document.querySelector('.i');
+    let light = document.querySelector('.light');
+    let board = document.querySelector('.board');
+
+    light.classList.remove('on');
+    i.classList.add('off');
+
+    disableTouch();
+    showBlackSquare();  
+
+    board.addEventListener('touchstart', newGame);
+    board.addEventListener('mousedown', newGame);
+}
+
 const toggleLights = (e) => {
     
     let cell = e.currentTarget;
@@ -136,6 +201,8 @@ const toggleLights = (e) => {
 
     refreshBoard();
     showHints();
+
+    if (puzzleSolved()) setTimeout(gameOver,0);
 }
 
 const toggleHints = () => {
