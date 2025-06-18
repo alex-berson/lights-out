@@ -29,12 +29,26 @@ const generatePattern = () => {
         } 
     } while (gaussianEliminationMod2() == null || puzzleSolved());
 
-    //  board = [[1,1,1],
-    //            1,1,1],
-    //           [1,1,1]]; 
+    console.log('Generated board:', board);
+
+    board = [[1,0,1],
+             [0,1,0],
+             [1,0,1]]; 
+
+    // board = [[0,1,0],
+    //          [1,0,1],
+    //          [0,1,0]]; 
+
+    //  board = [[1,0,1],
+    //          [0,0,0],
+    //          [1,0,1]]; 
+
+    // board = [[1,0,1],
+    //          [1,1,1],
+    //          [0,0,1]]; 
 }
 
-const gaussianEliminationMod2  = () => {
+const gaussianEliminationMod2 = () => {
 
     let n = SIZE ** 2;
     let target = board.flat();
@@ -68,7 +82,7 @@ const gaussianEliminationMod2  = () => {
     }
 
     for (let i = 0; i < n; i++) {
-        if (matrix[i].every((val, idx) => val == 0 || idx == n) && matrix[i][n] == 1) return null; 
+        if (matrix[i].every((val, idx) => val == 0 || idx == n) && matrix[i][n] == 1) return null;
     }
 
     let solution = Array(n).fill(0);
@@ -108,7 +122,7 @@ const createToggleMatrix = () => {
     return matrix;
 }
 
-const redrawBoard = () => {   
+const redrawBoard = () => {
 
     let cells = document.querySelectorAll('.cell');
 
@@ -116,33 +130,8 @@ const redrawBoard = () => {
         for (let j = 0; j < SIZE; j++) {
             cells[i * SIZE + j].classList.toggle('on', board[i][j]);
         }
-    }   
-
-    return;
+    }
 }
-
-// const redrawBoard = async () => {
-
-//     let cells = [...document.querySelectorAll('.cell')];
-
-//     await Promise.all(cells.map((cell, idx) => new Promise(resolve => {
-
-//             let i = Math.floor(idx / SIZE);
-//             let j = idx % SIZE;
-            
-//             if ((board[i][j] && !cell.classList.contains('on')) ||
-//                 (!board[i][j] && cell.classList.contains('on'))) {
-
-//                 cell.classList.toggle('on')
-
-//                 cell.addEventListener('transitionend', resolve, {once: true});
-
-//             } else {
-//                 resolve();
-//             }
-//     })));
-// }
-
 
 const toggleLights = (e) => {
     
@@ -160,12 +149,6 @@ const toggleLights = (e) => {
     redrawBoard();
     showHints();
 
-    // if (puzzleSolved()) gameOver();
-
-    // if (puzzleSolved()) setTimeout(gameOver, 0);
-
-    // await sleep(0);
-
     if (puzzleSolved()) gameOver();
 }
 
@@ -176,15 +159,19 @@ const toggleHints = async () => {
 
     if (puzzleSolved()) return;
 
-    // button.classList.toggle('on');
+    disableHints();
+
     button.classList.add('blink');
 
-    button.addEventListener('animationend', () => button.classList.remove('blink'), {once: true});
-
-    // setTimeout(showHints, 200);
+    button.addEventListener('animationend', () => {
+        enableHints();
+        button.classList.remove('blink');
+    }, {once: true});
 
     await sleep(100);
+
     dot.classList.toggle('on');
+
     showHints();
 }
 
@@ -211,12 +198,11 @@ const gameOver = async () => {
 
     disableTouch();
 
-    // button.classList.remove('on');
     dot.classList.remove('on');
     letterI.classList.add('off');
     button.classList.add('off');
 
-    await paintBlackSquare(); 
+    await paintBlackSquare();
     
     board.addEventListener('touchstart', newGame);
     board.addEventListener('mousedown', newGame);
@@ -224,42 +210,33 @@ const gameOver = async () => {
 
 const paintBlackSquare = async () => {
 
-    // let cells = document.querySelectorAll('.cell');
-
     let cells = [...document.querySelectorAll('.cell')];
 
     await Promise.all(cells.map((cell, idx) => new Promise(resolve => {
 
-            let i = Math.floor(idx / SIZE);
-            let j = idx % SIZE;
+        let i = Math.floor(idx / SIZE);
+        let j = idx % SIZE;
+        let x = 50, y = 50;
 
-    // for (let i = 0; i < SIZE; i++) {
-        // for (let j = 0; j < SIZE; j++) {
-           
-            let x = 50, y = 50;
-            // let cell = cells[i * SIZE + j];
+        if (i % SIZE == 0) y = 0;
+        if (i % SIZE == SIZE - 1) y = 100;
+        if (j % SIZE == 0) x = 0;
+        if (j % SIZE == SIZE - 1) x = 100;
 
-            if (i % SIZE == 0) y = 0;
-            if (i % SIZE == SIZE - 1) y = 100;
-            if (j % SIZE == 0) x = 0;
-            if (j % SIZE == SIZE - 1) x = 100;
+        cell.style.transformOrigin = `${x}% ${y}%`;
+        cell.classList.add('scale');
 
-            cell.style.transformOrigin = `${x}% ${y}%`;
-            cell.classList.add('scale');
+        cell.addEventListener('transitionend', () => {
 
-            cell.addEventListener('transitionend', () => {
+            cell.classList.add('instant');
 
-                cell.classList.add('instant');
-
-                resolve();
-                
-            }, {once: true});
-        // }
-    // }
+            resolve();
+            
+        }, {once: true});
     })));
 }
 
-const newGame = () => {
+const newGame = async () => {
 
     let board = document.querySelector('.board');
     let cells = document.querySelectorAll('.cell');
@@ -277,11 +254,9 @@ const newGame = () => {
     generatePattern();
     redrawBoard();
 
-    // await sleep(0);
+    await sleep(0);
 
-    requestAnimationFrame(() => {
-        cells.forEach(cell => cell.classList.remove('instant'));
-    });
+    cells.forEach(cell => cell.classList.remove('instant'));
 
     enableTouch();
 }
@@ -330,10 +305,15 @@ const disableScreen = () => {
     document.body.addEventListener('mousedown', preventDefault, {passive: false});
 }
 
+const registerServiceWorker = () => {
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+}
+
 const init = () => {
 
+    registerServiceWorker();
     disableScreen();
-    setBoardSize(); 
+    setBoardSize();
     initBoard();
     generatePattern();
     redrawBoard();
@@ -341,18 +321,7 @@ const init = () => {
     enableTouch();
     enableHints();
 
-    // toggleHints(); //
-
-
-    enableReset(); //
-}
-
-const enableReset = () => {
-
-    let resetBtn = document.querySelector('.reset');
-
-    resetBtn.addEventListener('touchstart', newGame);
-    resetBtn.addEventListener('mousedown', newGame);
+    // setTimeout(play, 1000); //
 }
 
 window.onload = () => document.fonts.ready.then(init);

@@ -1,0 +1,19 @@
+{
+   "name": "Lights Out",
+   "short_name": "Lights Out",
+   "start_url": "index.html",
+   "display": "standalone",
+   "orientation":  "portrait",
+   "icons": [{
+      "src": "images/pwa-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+   },
+   {
+      "src": "images/pwa-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+   }]
+}
