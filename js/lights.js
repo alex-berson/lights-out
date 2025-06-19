@@ -28,24 +28,6 @@ const generatePattern = () => {
             }
         } 
     } while (gaussianEliminationMod2() == null || puzzleSolved());
-
-    console.log('Generated board:', board);
-
-    board = [[1,0,1],
-             [0,1,0],
-             [1,0,1]]; 
-
-    // board = [[0,1,0],
-    //          [1,0,1],
-    //          [0,1,0]]; 
-
-    //  board = [[1,0,1],
-    //          [0,0,0],
-    //          [1,0,1]]; 
-
-    // board = [[1,0,1],
-    //          [1,1,1],
-    //          [0,0,1]]; 
 }
 
 const gaussianEliminationMod2 = () => {
@@ -149,7 +131,7 @@ const toggleLights = (e) => {
     redrawBoard();
     showHints();
 
-    if (puzzleSolved()) gameOver();
+    if (puzzleSolved()) endGame();
 }
 
 const toggleHints = async () => {
@@ -189,7 +171,7 @@ const showHints = () => {
     }
 }
 
-const gameOver = async () => {
+const endGame = async () => {
 
     let dot = document.querySelector('.dot');
     let board = document.querySelector('.board');
@@ -204,8 +186,8 @@ const gameOver = async () => {
 
     await paintBlackSquare();
     
-    board.addEventListener('touchstart', newGame);
-    board.addEventListener('mousedown', newGame);
+    board.addEventListener('touchstart', resetGame);
+    board.addEventListener('mousedown', resetGame);
 }
 
 const paintBlackSquare = async () => {
@@ -236,15 +218,15 @@ const paintBlackSquare = async () => {
     })));
 }
 
-const newGame = async () => {
+const resetGame = async () => {
 
     let board = document.querySelector('.board');
     let cells = document.querySelectorAll('.cell');
     let button = document.querySelector('.button');
     let letterI = document.querySelector('.letter-i');
    
-    board.removeEventListener('touchstart', newGame);
-    board.removeEventListener('mousedown', newGame);
+    board.removeEventListener('touchstart', resetGame);
+    board.removeEventListener('mousedown', resetGame);
 
     letterI.classList.remove('off');
     button.classList.remove('off');
@@ -320,8 +302,6 @@ const init = () => {
     showBoard();
     enableTouch();
     enableHints();
-
-    // setTimeout(play, 1000); //
 }
 
 window.onload = () => document.fonts.ready.then(init);
